@@ -1,0 +1,46 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.2.2/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded"
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "files": {
+    "ignore": [
+      "*.js",
+      "!tsconfig.json",
+      "dist",
+      "node_modules",
+      "rush.json",
+      ".rush",
+      ".vscode",
+      ".github",
+      "./common",
+      "./coverage",
+      "./html",
+      "./apps/benchmark/benchmark",
+      "CHANGELOG.json"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "style": {
+        "noNonNullAssertion": "off",
+        "noParameterAssign": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off"
+      },
+      "recommended": true
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "css-color",
+  "version": "0.0.1",
+  "description": "css color",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
+  "scripts": {
+    "lint": "biome check --apply-unsafe  ./",
+    "format": "biome format --write  ./",
+    "build": "rm ./dist -rf && tsc -p ./tsconfig.build.json",
+    "dev": "tsc -w -p ./tsconfig.build.json",
+    "test": "vitest"
+  },
+  "keywords": [
+    "css",
+    "color"
+  ],
+  "author": "ahaoboy",
+  "license": "ISC",
+  "devDependencies": {
+    "@biomejs/biome": "^1.4.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  }
+}
