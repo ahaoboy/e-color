@@ -1,7 +1,7 @@
 {
   "name": "e-color",
-  "version": "0.0.2",
-  "description": "css color",
+  "version": "0.0.3",
+  "description": "e-color, css color",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {

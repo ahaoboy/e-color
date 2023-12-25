@@ -1,142 +1,154 @@
-import { ColorFormat } from "."
-import {
-  bgrToRgb,
-  bgraToRgba,
-  invertBGRAColor,
-  invertRGBAColor,
-  leftShift,
-  rgbToBgr,
-  rgbaToBgra,
-  rightShift,
-} from "./common"
+function toU8(n: number) {
+  return n < 0 ? n + 0xff : n
+}
 
-export class Color {
-  private color = 0
-  private format: ColorFormat = "rgb"
+function toU32(n: number) {
+  return n < 0 ? n + 0xffffffff + 1 : n
+}
 
-  private constructor(color: number | string = 0, format: ColorFormat = "rgb") {
-    this.color = typeof color === "number" ? color : parseInt(color, 16)
-    this.format = format
+abstract class Color<T> {
+  protected color: number
+  protected bitCount = 6
+  constructor(colorHex: string | number) {
+    this.color =
+      typeof colorHex === "number" ? colorHex : parseInt(colorHex, 16)
   }
-  static fromRgba(rgba: string | number) {
-    return new Color(rgba, "rgba")
-  }
-
-  static fromBgra(bgra: string | number) {
-    return new Color(bgra, "bgra")
-  }
-  static fromRgb(rgb: string | number) {
-    return new Color(rgb, "rgb")
-  }
-
-  static fromBgr(bgr: string | number) {
-    return new Color(bgr, "bgr")
-  }
-  toRgba() {
-    switch (this.format) {
-      case "rgba": {
-        return this
-      } case "bgra": {
-        this.color = bgraToRgba(this.color)
-        this.format = "rgba"
-        return this
-      } case "rgb": {
-        this.color = leftShift(this.color, 8)
-        this.format = "rgba"
-        return this
-      } case "bgr": {
-        this.color = bgraToRgba(leftShift(this.color, 8))
-        this.format = "rgba"
-        return this
-      }
-    }
-
-  }
-
-  toBgra() {
-    switch (this.format) {
-      case "bgra": {
-        return this
-      } case "rgba": {
-        this.color = rgbaToBgra(this.color)
-        this.format = "bgra"
-        return this
-      } case "rgb": {
-        this.color = rgbaToBgra(leftShift(this.color, 8))
-        this.format = "bgra"
-        return this
-      } case "bgr": {
-        this.color = leftShift(this.color, 8)
-        this.format = "bgra"
-        return this
-      }
-    }
-  }
-
-  toRgb() {
-    switch (this.format) {
-      case "rgb": {
-        return this
-      } case "rgba": {
-        this.color = rightShift(this.color, 8)
-        this.format = "rgb"
-        return this
-      } case "bgra": {
-        this.color = bgrToRgb(rightShift(this.color, 8))
-        this.format = "rgb"
-        return this
-      } case "bgr": {
-        this.color = bgrToRgb(this.color)
-        this.format = "rgb"
-        return this
-      }
-    }
-  }
+  abstract toRgba(): Rgba
+  abstract fromRgba(rgba: Rgba): T
 
   toBgr() {
-    switch (this.format) {
-      case "bgr": {
-        return this
-      } case "bgra": {
-        this.color = this.color >> 8
-        this.format = "bgr"
-        return this
-      } case "rgba": {
-        this.color = rgbToBgr(this.color >> 8)
-        this.format = "bgr"
-        return this
-      } case "rgb": {
-        this.color = rgbToBgr(this.color)
-        this.format = "bgr"
-        return this
-      }
-    }
+    return this.toRgba().toBgr()
   }
-  clone() {
-    return new Color(this.color, this.format)
+  toBgra() {
+    return this.toRgba().toBgra()
   }
-  invert() {
-    switch (this.format) {
-      case "bgra": {
-        this.color = invertBGRAColor(this.color)
-        return this
-      } case "bgr": {
-        this.color = rightShift(invertBGRAColor(leftShift(this.color, 8)), 8)
-        return this
-      } case "rgb": {
-        this.color = rightShift(invertRGBAColor(leftShift(this.color, 8)), 8)
-        return this
-      } case "rgba": {
-        this.color = invertRGBAColor(this.color)
-        return this
-      }
-    }
-  }
-  hasAlpha() {
-    return this.format === "rgba" || this.format === "bgra"
+  toRgb() {
+    return this.toRgba().toRgb()
   }
   toHex(prefix = "") {
-    const hex = this.color.toString(16).padStart(6, "0")
-    return prefix + (this.hasAlpha() ? hex.padEnd(8, "0") : hex)
+    const hex = this.color.toString(16).padStart(this.bitCount, "0")
+    return prefix + hex
+  }
+  invert(): T {
+    return this.fromRgba(this.toRgba().invert())
+  }
+}
+export class Rgb extends Color<Rgb> {
+  protected bitCount = 6
+  get red() {
+    return toU8((this.color >> 16) & 0xff)
+  }
+  get green() {
+    return toU8((this.color >> 8) & 0xff)
+  }
+  get blue() {
+    return toU8(this.color & 0xff)
+  }
+  fromRgba(rgba: Rgba) {
+    const c = toU32((rgba.red << 16) + (rgba.green << 8) + rgba.blue)
+    return new Rgb(c)
+  }
+  toRgba() {
+    const c = toU32(
+      (this.red << 24) + (this.green << 16) + (this.blue << 8) + 255,
+    )
+    return new Rgba(c)
+  }
+}
+
+export class Rgba extends Color<Rgba> {
+  protected bitCount = 8
+  toRgba(): Rgba {
+    return new Rgba(this.color)
+  }
+  fromRgba(rgba: Rgba): Rgba {
+    return new Rgba(rgba.color)
+  }
+
+  get red() {
+    return toU8((this.color >> 24) & 0xff)
+  }
+  get green() {
+    return toU8((this.color >> 16) & 0xff)
+  }
+  get blue() {
+    return toU8((this.color >> 8) & 0xff)
+  }
+
+  get alpha() {
+    return toU8(this.color & 0xff)
+  }
+  invert() {
+    const c = toU32(
+      ((255 - this.red) << 24) +
+        ((255 - this.green) << 16) +
+        ((255 - this.blue) << 8) +
+        this.alpha,
+    )
+    return new Rgba(c)
+  }
+  toRgb() {
+    return new Rgb(0).fromRgba(this)
+  }
+  toBgr() {
+    return new Bgr(0).fromRgba(this)
+  }
+  toBgra() {
+    return new Bgra(0).fromRgba(this)
+  }
+}
+
+export class Bgr extends Color<Bgr> {
+  protected bitCount = 6
+  get blue() {
+    return toU8((this.color >> 16) & 0xff)
+  }
+  get green() {
+    return toU8((this.color >> 8) & 0xff)
+  }
+  get red() {
+    return toU8(this.color & 0xff)
+  }
+
+  fromRgba(rgba: Rgba) {
+    const c = toU32((rgba.blue << 16) + (rgba.green << 8) + rgba.red)
+    return new Bgr(c)
+  }
+
+  toRgba() {
+    const c = toU32(
+      (this.blue << 24) + (this.green << 16) + (this.red << 8) + 255,
+    )
+    return new Rgba(c)
+  }
+}
+export class Bgra extends Color<Bgra> {
+  protected bitCount = 8
+  get blue() {
+    return toU8((this.color >> 24) & 0xff)
+  }
+  get green() {
+    return toU8((this.color >> 16) & 0xff)
+  }
+  get red() {
+    return toU8((this.color >> 8) & 0xff)
+  }
+
+  get alpha() {
+    return toU8(this.color & 0xff)
+  }
+
+  fromRgba(rgba: Rgba) {
+    const c = toU32(
+      (rgba.blue << 24) + (rgba.green << 16) + (rgba.red << 8) + rgba.alpha,
+    )
+    return new Bgra(c)
+  }
+
+  toRgba() {
+    const c = toU32(
+      (this.red << 24) + (this.green << 16) + (this.blue << 8) + this.alpha,
+    )
+    return new Rgba(c)
   }
 }
