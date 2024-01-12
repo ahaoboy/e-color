@@ -1,62 +1,7 @@
-function toU8(n: number) {
-  return n < 0 ? n + 0xff : n
-}
+import { Color, createColors, toU8, toU32 } from "./common"
+import { COLORS, ColorName } from "./const"
 
-function toU32(n: number) {
-  return n < 0 ? n + 0xffffffff + 1 : n
-}
-
-abstract class Color<T> {
-  protected color: number
-  protected bitCount = 6
-  constructor(colorHex: string | number) {
-    this.color =
-      typeof colorHex === "number" ? colorHex : parseInt(colorHex, 16)
-  }
-  abstract toRgba(): Rgba
-  abstract fromRgba(rgba: Rgba): T
-
-  toBgr() {
-    return this.toRgba().toBgr()
-  }
-  toBgra() {
-    return this.toRgba().toBgra()
-  }
-  toRgb() {
-    return this.toRgba().toRgb()
-  }
-  toHex(prefix = "") {
-    const hex = this.color.toString(16).padStart(this.bitCount, "0")
-    return prefix + hex
-  }
-  invert(): T {
-    return this.fromRgba(this.toRgba().invert())
-  }
-}
-export class Rgb extends Color<Rgb> {
-  protected bitCount = 6
-  get red() {
-    return toU8((this.color >> 16) & 0xff)
-  }
-  get green() {
-    return toU8((this.color >> 8) & 0xff)
-  }
-  get blue() {
-    return toU8(this.color & 0xff)
-  }
-  fromRgba(rgba: Rgba) {
-    const c = toU32((rgba.red << 16) + (rgba.green << 8) + rgba.blue)
-    return new Rgb(c)
-  }
-  toRgba() {
-    const c = toU32(
-      (this.red << 24) + (this.green << 16) + (this.blue << 8) + 255,
-    )
-    return new Rgba(c)
-  }
-}
-
-export class Rgba extends Color<Rgba> {
+export class Rgba extends Color {
   protected bitCount = 8
   toRgba(): Rgba {
     return new Rgba(this.color)
@@ -64,6 +9,11 @@ export class Rgba extends Color<Rgba> {
   fromRgba(rgba: Rgba): Rgba {
     return new Rgba(rgba.color)
   }
+  static colors = createColors(Rgba.fromName)
+
+  static fromName(name: ColorName) {
+    return new Rgba(`${COLORS[name]}FF`)
+  }
 
   get red() {
     return toU8((this.color >> 24) & 0xff)
@@ -78,27 +28,62 @@ export class Rgba extends Color<Rgba> {
   get alpha() {
     return toU8(this.color & 0xff)
   }
-  invert() {
+  invert(alpha = false) {
     const c = toU32(
       ((255 - this.red) << 24) +
         ((255 - this.green) << 16) +
         ((255 - this.blue) << 8) +
-        this.alpha,
+        (alpha ? 255 - this.alpha : this.alpha),
     )
     return new Rgba(c)
   }
   toRgb() {
-    return new Rgb(0).fromRgba(this)
+    return Rgb.fromRgba(this)
   }
   toBgr() {
-    return new Bgr(0).fromRgba(this)
+    return Bgr.fromRgba(this)
   }
   toBgra() {
-    return new Bgra(0).fromRgba(this)
+    return Bgra.fromRgba(this)
   }
 }
 
-export class Bgr extends Color<Bgr> {
+export class Rgb extends Color {
+  protected bitCount = 6
+  static red: any
+  static colors = createColors(Rgb.fromName)
+
+  get red() {
+    return toU8((this.color >> 16) & 0xff)
+  }
+  get green() {
+    return toU8((this.color >> 8) & 0xff)
+  }
+  get blue() {
+    return toU8(this.color & 0xff)
+  }
+  static fromRgba(rgba: Rgba): Rgb {
+    const c = toU32((rgba.red << 16) + (rgba.green << 8) + rgba.blue)
+    return new Rgb(c)
+  }
+
+  static fromName(name: ColorName): Rgb {
+    return new Rgb(COLORS[name])
+  }
+
+  toRgba() {
+    const c = toU32(
+      (this.red << 24) + (this.green << 16) + (this.blue << 8) + 255,
+    )
+    return new Rgba(c)
+  }
+
+  invert(alpha = false) {
+    return Rgb.fromRgba(this.toRgba().invert(alpha))
+  }
+}
+
+export class Bgr extends Color {
   protected bitCount = 6
   get blue() {
     return toU8((this.color >> 16) & 0xff)
@@ -109,21 +94,29 @@ export class Bgr extends Color<Bgr> {
   get red() {
     return toU8(this.color & 0xff)
   }
+  static colors = createColors(Bgr.fromName)
 
-  fromRgba(rgba: Rgba) {
+  static fromRgba(rgba: Rgba): Bgr {
     const c = toU32((rgba.blue << 16) + (rgba.green << 8) + rgba.red)
     return new Bgr(c)
   }
-
+  static fromName(name: ColorName): Bgr {
+    return Bgr.fromRgba(Rgba.fromName(name))
+  }
   toRgba() {
     const c = toU32(
       (this.blue << 24) + (this.green << 16) + (this.red << 8) + 255,
     )
     return new Rgba(c)
   }
+
+  invert(alpha = false) {
+    return Bgr.fromRgba(this.toRgba().invert(alpha))
+  }
 }
-export class Bgra extends Color<Bgra> {
+export class Bgra extends Color {
   protected bitCount = 8
+  static colors = createColors(Bgra.fromName)
   get blue() {
     return toU8((this.color >> 24) & 0xff)
   }
@@ -138,17 +131,22 @@ export class Bgra extends Color<Bgra> {
     return toU8(this.color & 0xff)
   }
 
-  fromRgba(rgba: Rgba) {
+  static fromRgba(rgba: Rgba): Bgra {
     const c = toU32(
       (rgba.blue << 24) + (rgba.green << 16) + (rgba.red << 8) + rgba.alpha,
     )
     return new Bgra(c)
   }
-
+  static fromName(name: ColorName): Bgra {
+    return Bgra.fromRgba(Rgba.fromName(name))
+  }
   toRgba() {
     const c = toU32(
       (this.red << 24) + (this.green << 16) + (this.blue << 8) + this.alpha,
     )
     return new Rgba(c)
+  }
+  invert(alpha = false) {
+    return Bgra.fromRgba(this.toRgba().invert(alpha))
   }
 }

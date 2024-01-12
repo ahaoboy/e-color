@@ -151,5 +151,4 @@ export const COLORS = {
 } as const
 
 export type ColorName = keyof typeof COLORS
-
 export type ColorFormat = "rgba" | "bgra" | "rgb" | "bgr"
