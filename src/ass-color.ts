@@ -1,5 +1,6 @@
-import { Bgra, ColorName, Rgba } from "."
+import { Bgra, Rgba } from "./color"
 import { createColors, toU32 } from "./common"
+import { ColorName } from "./const"
 
 export class AssColor extends Bgra {
   static Colors = createColors(AssColor.fromName)
