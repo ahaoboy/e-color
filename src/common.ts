@@ -12,11 +12,11 @@ export function toU32(n: number) {
 export function createColors<T>(
   fn: (name: ColorName) => T,
 ): Record<ColorName, T> {
-  const colors = {} as Record<ColorName, T>
+  const Colors = {} as Record<ColorName, T>
   for (const name of Object.keys(COLORS) as ColorName[]) {
-    colors[name] = fn(name)
+    Colors[name] = fn(name)
   }
-  return colors
+  return Colors
 }
 
 export abstract class Color {

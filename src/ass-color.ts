@@ -2,7 +2,7 @@ import { Bgra, ColorName, Rgba } from "."
 import { createColors, toU32 } from "./common"
 
 export class AssColor extends Bgra {
-  static colors = createColors(AssColor.fromName)
+  static Colors = createColors(AssColor.fromName)
   static fromRgba(rgba: Rgba): AssColor {
     const c = toU32(
       (rgba.blue << 24) +

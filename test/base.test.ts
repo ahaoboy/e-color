@@ -10,31 +10,51 @@ test("base test", () => {
   expect(new Rgb("FFFFFF").toBgr().toHex()).toEqual("FFFFFF")
 })
 
-test("static colors test", () => {
-  expect(Rgb.colors.Red.toHex()).equal("FF0000")
-  expect(Rgba.colors.Red.toHex()).equal("FF0000FF")
-  expect(Bgra.colors.Red.toHex()).equal("0000FFFF")
+test("static Colors test", () => {
+  expect(Rgb.Colors.Red.toHex()).equal("FF0000")
+  expect(Rgba.Colors.Red.toHex()).equal("FF0000FF")
+  expect(Bgra.Colors.Red.toHex()).equal("0000FFFF")
 })
 
 test("rgba color test", () => {
-  expect(Rgba.colors.Red.toHex()).equal("FF0000FF")
-  expect(Rgba.colors.Red.invert(true).toHex()).equal("00FFFF00")
-  expect(Rgba.colors.Red.invert(false).toHex()).equal("00FFFFFF")
+  expect(Rgba.Colors.Red.toHex()).equal("FF0000FF")
+  expect(Rgba.Colors.Red.invert(true).toHex()).equal("00FFFF00")
+  expect(Rgba.Colors.Red.invert(false).toHex()).equal("00FFFFFF")
 })
 
 test("bgra color test", () => {
-  expect(Bgra.colors.Red.toHex()).equal("0000FFFF")
-  expect(Bgra.colors.Red.invert(true).toHex()).equal("FFFF0000")
-  expect(Bgra.colors.Red.invert(false).toHex()).equal("FFFF00FF")
+  expect(Bgra.Colors.Red.toHex()).equal("0000FFFF")
+  expect(Bgra.Colors.Red.invert(true).toHex()).equal("FFFF0000")
+  expect(Bgra.Colors.Red.invert(false).toHex()).equal("FFFF00FF")
 })
 
 test("ass color test", () => {
-  expect(AssColor.colors.Red.toHex()).equal("0000FF00")
-  expect(AssColor.colors.Red.toRgba().toHex()).equal("FF0000FF")
-  expect(AssColor.colors.Red.toRgba().invert().toHex()).equal("00FFFFFF")
+  expect(AssColor.Colors.Red.toHex()).equal("0000FF00")
+  expect(AssColor.Colors.Red.toRgba().toHex()).equal("FF0000FF")
+  expect(AssColor.Colors.Red.toRgba().invert().toHex()).equal("00FFFFFF")
   expect(
-    AssColor.fromRgba(AssColor.colors.Red.toRgba().invert()).toHex(),
+    AssColor.fromRgba(AssColor.Colors.Red.toRgba().invert()).toHex(),
   ).equal("FFFF0000")
-  expect(AssColor.colors.Red.invert(true).toHex()).equal("FFFF00FF")
-  expect(AssColor.colors.Red.invert(false).toHex()).equal("FFFF0000")
+  expect(AssColor.Colors.Red.invert(true).toHex()).equal("FFFF00FF")
+  expect(AssColor.Colors.Red.invert(false).toHex()).equal("FFFF0000")
+})
+
+test("set color test", () => {
+  {
+    const r = Rgba.Colors.White
+    r.red = 1
+    r.green = 2
+    r.blue = 3
+    r.alpha = 4
+    expect(r.toHex()).toEqual("01020304")
+  }
+
+  {
+    const r = Bgra.Colors.White
+    r.red = 1
+    r.green = 2
+    r.blue = 3
+    r.alpha = 4
+    expect(r.toHex()).toEqual("03020104")
+  }
 })

@@ -1,6 +1,6 @@
 {
   "name": "e-color",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "e-color, css color",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
@@ -18,7 +18,7 @@
   "author": "ahaoboy",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/biome": "^1.4.1",
+    "@biomejs/biome": "^1.5.1",
     "typescript": "^5.3.3",
     "vitest": "^1.1.0"
   }
