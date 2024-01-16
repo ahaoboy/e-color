@@ -42,12 +42,28 @@ export class Rgba extends Color {
     this.color = toU32((this.color & 0xffffff00) | toU32(n << 0))
   }
 
+  setRed(n: number) {
+    this.red = n
+    return this
+  }
+  setGreen(n: number) {
+    this.green = n
+    return this
+  }
+  setBlue(n: number) {
+    this.blue = n
+    return this
+  }
+  setAlpha(n: number) {
+    this.alpha = n
+    return this
+  }
   invert(alpha = false) {
     const c = toU32(
       ((255 - this.red) << 24) +
-        ((255 - this.green) << 16) +
-        ((255 - this.blue) << 8) +
-        (alpha ? 255 - this.alpha : this.alpha),
+      ((255 - this.green) << 16) +
+      ((255 - this.blue) << 8) +
+      (alpha ? 255 - this.alpha : this.alpha),
     )
     return new Rgba(c)
   }
@@ -85,6 +101,20 @@ export class Rgb extends Color {
   set blue(n: number) {
     this.color = toU32((this.color & 0xffff00) | toU32(n << 0))
   }
+
+  setRed(n: number) {
+    this.red = n
+    return this
+  }
+  setGreen(n: number) {
+    this.green = n
+    return this
+  }
+  setBlue(n: number) {
+    this.blue = n
+    return this
+  }
+
   static fromRgba(rgba: Rgba): Rgb {
     const c = toU32((rgba.red << 16) + (rgba.green << 8) + rgba.blue)
     return new Rgb(c)
@@ -127,7 +157,18 @@ export class Bgr extends Color {
   set red(n: number) {
     this.color = toU32((this.color & 0xffff00) | toU32(n << 0))
   }
-
+  setRed(n: number) {
+    this.red = n
+    return this
+  }
+  setGreen(n: number) {
+    this.green = n
+    return this
+  }
+  setBlue(n: number) {
+    this.blue = n
+    return this
+  }
   static Colors = createColors(Bgr.fromName)
 
   static fromRgba(rgba: Rgba): Bgr {
@@ -176,6 +217,24 @@ export class Bgra extends Color {
   set alpha(n: number) {
     this.color = toU32((this.color & 0xffffff00) | toU32(n << 0))
   }
+
+  setRed(n: number) {
+    this.red = n
+    return this
+  }
+  setGreen(n: number) {
+    this.green = n
+    return this
+  }
+  setBlue(n: number) {
+    this.blue = n
+    return this
+  }
+  setAlpha(n: number) {
+    this.alpha = n
+    return this
+  }
+
   static fromRgba(rgba: Rgba): Bgra {
     const c = toU32(
       (rgba.blue << 24) + (rgba.green << 16) + (rgba.red << 8) + rgba.alpha,
