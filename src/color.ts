@@ -3,6 +3,11 @@ import { COLORS, ColorName } from "./const"
 
 export class Rgba extends Color {
   protected bitCount = 8
+  constructor(colorHex: string | number) {
+    super(colorHex)
+    this.color =
+      typeof colorHex === "number" ? colorHex : parseInt(colorHex, 16)
+  }
   toRgba(): Rgba {
     return new Rgba(this.color)
   }
@@ -80,6 +85,12 @@ export class Rgba extends Color {
 
 export class Rgb extends Color {
   protected bitCount = 6
+  constructor(colorHex: string | number) {
+    super(colorHex)
+    this.color =
+      typeof colorHex === "number" ? colorHex : parseInt(colorHex, 16)
+  }
+
   static Colors = createColors(Rgb.fromName)
 
   get red() {
@@ -137,6 +148,11 @@ export class Rgb extends Color {
 }
 
 export class Bgr extends Color {
+  constructor(colorHex: string | number) {
+    super(colorHex)
+    this.color =
+      typeof colorHex === "number" ? colorHex : parseInt(colorHex, 16)
+  }
   protected bitCount = 6
   get blue() {
     return toU8((this.color >> 16) & 0xff)

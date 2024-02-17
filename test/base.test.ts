@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { Bgra, COLORS, Rgb, Rgba } from "../src"
+import { Bgr, Bgra, COLORS, Rgb, Rgba } from "../src"
 import { AssColor } from "../src/ass-color"
 
 test("base test", () => {
@@ -8,6 +8,11 @@ test("base test", () => {
   const c2 = c1.invert().toHex()
   expect(c2).toEqual("000000")
   expect(new Rgb("FFFFFF").toBgr().toHex()).toEqual("FFFFFF")
+})
+
+test("fromName", () => {
+  const c1 = Bgr.fromName("AliceBlue").toHex()
+  expect(c1).toEqual("FFF8F0")
 })
 
 test("static Colors test", () => {
