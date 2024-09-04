@@ -1,24 +1,24 @@
 {
   "name": "e-color",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "e-color, css color",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {
-    "lint": "biome check --apply-unsafe  ./",
+    "lint:fix": "biome lint ./ --write --unsafe",
     "format": "biome format --write  ./",
     "build": "rm ./dist -rf && tsc -p ./tsconfig.build.json",
     "dev": "tsc -w -p ./tsconfig.build.json",
-    "test": "vitest"
+    "test": "vitest",
+    "bench": "vitest bench"
   },
-  "keywords": [
-    "css",
-    "color"
-  ],
+  "keywords": ["css", "color"],
   "author": "ahaoboy",
   "license": "ISC",
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
+    "color-bits": "^1.0.3",
+    "colord": "^2.9.3",
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"
   }

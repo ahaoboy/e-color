@@ -1,6 +1,13 @@
 import { Rgba } from "./color"
 import { COLORS, ColorName } from "./const"
 
+export function parseHex(hex: string) {
+  if (hex[0] === "#") {
+    return Number.parseInt(hex.slice(1), 16)
+  }
+  return Number.parseInt(hex, 16)
+}
+
 export function toU8(n: number) {
   return n < 0 ? n + 0xff : n
 }
@@ -19,15 +26,17 @@ export function createColors<T>(
   return Colors
 }
 
-export abstract class Color {
-  protected color: number
-  protected bitCount = 6
+export class Color {
+  color = 0
+  byteCount = 6
 
   constructor(colorHex: string | number) {
-    this.color =
-      typeof colorHex === "number" ? colorHex : parseInt(colorHex, 16)
+    this.color = typeof colorHex === "number" ? colorHex : parseHex(colorHex)
   }
-  abstract toRgba(): Rgba
+
+  toRgba(): Rgba {
+    throw new Error("todo")
+  }
 
   toBgr() {
     return this.toRgba().toBgr()
@@ -39,7 +48,7 @@ export abstract class Color {
     return this.toRgba().toRgb()
   }
   toHex(prefix = "") {
-    const hex = this.color.toString(16).padStart(this.bitCount, "0")
+    const hex = this.color.toString(16).padStart(this.byteCount, "0")
     return (prefix + hex).toUpperCase()
   }
 }

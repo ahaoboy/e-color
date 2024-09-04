@@ -8,6 +8,7 @@ test("base test", () => {
   const c2 = c1.invert().toHex()
   expect(c2).toEqual("000000")
   expect(new Rgb("FFFFFF").toBgr().toHex()).toEqual("FFFFFF")
+  expect(new Rgb("#11AA33").toBgr().toHex("#")).toEqual("#33AA11")
 })
 
 test("fromName", () => {

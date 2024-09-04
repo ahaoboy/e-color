@@ -2,12 +2,8 @@ import { Color, createColors, toU8, toU32 } from "./common"
 import { COLORS, ColorName } from "./const"
 
 export class Rgba extends Color {
-  protected bitCount = 8
-  constructor(colorHex: string | number) {
-    super(colorHex)
-    this.color =
-      typeof colorHex === "number" ? colorHex : parseInt(colorHex, 16)
-  }
+  byteCount = 8
+
   toRgba(): Rgba {
     return new Rgba(this.color)
   }
@@ -66,9 +62,9 @@ export class Rgba extends Color {
   invert(alpha = false) {
     const c = toU32(
       ((255 - this.red) << 24) +
-      ((255 - this.green) << 16) +
-      ((255 - this.blue) << 8) +
-      (alpha ? 255 - this.alpha : this.alpha),
+        ((255 - this.green) << 16) +
+        ((255 - this.blue) << 8) +
+        (alpha ? 255 - this.alpha : this.alpha),
     )
     return new Rgba(c)
   }
@@ -84,15 +80,9 @@ export class Rgba extends Color {
 }
 
 export class Rgb extends Color {
-  protected bitCount = 6
-  constructor(colorHex: string | number) {
-    super(colorHex)
-    this.color =
-      typeof colorHex === "number" ? colorHex : parseInt(colorHex, 16)
-  }
+  byteCount = 6
 
   static Colors = createColors(Rgb.fromName)
-
   get red() {
     return toU8((this.color >> 16) & 0xff)
   }
@@ -148,12 +138,8 @@ export class Rgb extends Color {
 }
 
 export class Bgr extends Color {
-  constructor(colorHex: string | number) {
-    super(colorHex)
-    this.color =
-      typeof colorHex === "number" ? colorHex : parseInt(colorHex, 16)
-  }
-  protected bitCount = 6
+  byteCount = 6
+
   get blue() {
     return toU8((this.color >> 16) & 0xff)
   }
@@ -206,7 +192,8 @@ export class Bgr extends Color {
   }
 }
 export class Bgra extends Color {
-  protected bitCount = 8
+  byteCount = 8
+
   static Colors = createColors(Bgra.fromName)
   get blue() {
     return toU8((this.color >> 24) & 0xff)
