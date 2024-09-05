@@ -2,7 +2,7 @@ import { alpha as colorBitsAlpha } from "color-bits/string"
 import { colord } from "colord"
 import { bench, describe } from "vitest"
 import { Rgba } from "../src"
-import { parseHex, set67, toU32 } from "../src/common"
+import { parseHex, set67 } from "../src/common"
 
 const Color = "#808080"
 describe("color", async () => {
@@ -17,10 +17,6 @@ describe("color", async () => {
   })
 
   bench("e-color oo", () => {
-    let N = 1 << 20
-    while (N--) new Rgba(Color).setAlpha(100)
-  })
-  bench("e-color", () => {
     let N = 1 << 20
     while (N--) new Rgba(Color).setAlpha(100)
   })
