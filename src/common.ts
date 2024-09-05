@@ -8,12 +8,40 @@ export function parseHex(hex: string) {
   return Number.parseInt(hex, 16)
 }
 
-export function toU8(n: number) {
-  return n < 0 ? n + 0xff : n
+// 0x01234567
+export const Mask01 = 0xff000000
+export const Mask23 = 0x00ff0000
+export const Mask45 = 0x0000ff00
+export const Mask67 = 0x000000ff
+
+export function get01(n: number): number {
+  return (n >> 24) & 0xff
+}
+export function get23(n: number): number {
+  return (n >> 16) & 0xff
+}
+export function get45(n: number): number {
+  return (n >> 8) & 0xff
+}
+export function get67(n: number): number {
+  return n & 0xff
+}
+
+export function set01(n: number, v: number): number {
+  return (n & 0x00ffffff) | (v << 24)
+}
+export function set23(n: number, v: number): number {
+  return (n & 0xff00ffff) | (v << 16)
+}
+export function set45(n: number, v: number): number {
+  return (n & 0xffff00ff) | (v << 8)
+}
+export function set67(n: number, v: number): number {
+  return (n & 0xffffff00) | v
 }
 
 export function toU32(n: number) {
-  return n < 0 ? n + 0xffffffff + 1 : n
+  return n >>> 0
 }
 
 export function createColors<T>(
@@ -48,7 +76,7 @@ export class Color {
     return this.toRgba().toRgb()
   }
   toHex(prefix = "") {
-    const hex = this.color.toString(16).padStart(this.byteCount, "0")
+    const hex = (this.color >>> 0).toString(16).padStart(this.byteCount, "0")
     return (prefix + hex).toUpperCase()
   }
 }

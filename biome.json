@@ -38,6 +38,7 @@
     "enabled": true,
     "rules": {
       "style": {
+        "useNumberNamespace": "off",
         "useImportType": "off",
         "noNonNullAssertion": "off",
         "noParameterAssign": "off"
