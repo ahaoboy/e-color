@@ -1,6 +1,26 @@
 import { expect, test } from "vitest"
-import { Bgr, Bgra, COLORS, Rgb, Rgba } from "../src"
-import { AssColor } from "../src/ass-color"
+import { Argb, Bgr, Bgra, COLORS, Rgb, Rgba } from "../src"
+
+test("rgba", () => {
+  const c1 = new Rgba("11223344")
+  expect(c1.red).toEqual(0x11)
+  expect(c1.green).toEqual(0x22)
+  expect(c1.blue).toEqual(0x33)
+  expect(c1.alpha).toEqual(0x44)
+  expect(c1.toHex()).toEqual("11223344")
+  const c2 = c1.invert()
+  expect(c2.red).toEqual(0xee)
+  expect(c2.green).toEqual(0xdd)
+  expect(c2.blue).toEqual(0xcc)
+  expect(c2.alpha).toEqual(0x44)
+  expect(c2.toHex()).toEqual("EEDDCC44")
+  const c3 = c1.invert(true)
+  expect(c3.red).toEqual(0xee)
+  expect(c3.green).toEqual(0xdd)
+  expect(c3.blue).toEqual(0xcc)
+  expect(c3.alpha).toEqual(0xbb)
+  expect(c3.toHex()).toEqual("EEDDCCBB")
+})
 
 test("base test", () => {
   const c1 = new Rgb(COLORS.White)
@@ -11,43 +31,21 @@ test("base test", () => {
   expect(new Rgb("#11AA33").toBgr().toHex("#")).toEqual("#33AA11")
 })
 
-test("fromName", () => {
-  const c1 = Bgr.fromName("AliceBlue").toHex()
-  expect(c1).toEqual("FFF8F0")
+test("rgba invert", () => {
+  const c1 = new Rgba("11223344", true)
+  expect(c1.toHex()).toEqual("11223344")
+  const c2 = c1.invert()
+  expect(c2.toHex()).toEqual("EEDDCCBB")
 })
 
-test("static Colors test", () => {
-  expect(Rgb.Colors.Red.toHex()).equal("FF0000")
-  expect(Rgba.Colors.Red.toHex()).equal("FF0000FF")
-  expect(Bgra.Colors.Red.toHex()).equal("0000FFFF")
-})
-
-test("rgba color test", () => {
-  expect(Rgba.Colors.Red.toHex()).equal("FF0000FF")
-  expect(Rgba.Colors.Red.invert(true).toHex()).equal("00FFFF00")
-  expect(Rgba.Colors.Red.invert(false).toHex()).equal("00FFFFFF")
-})
-
-test("bgra color test", () => {
-  expect(Bgra.Colors.Red.toHex()).equal("0000FFFF")
-  expect(Bgra.Colors.Red.invert(true).toHex()).equal("FFFF0000")
-  expect(Bgra.Colors.Red.invert(false).toHex()).equal("FFFF00FF")
-})
-
-test("ass color test", () => {
-  expect(AssColor.Colors.Red.toHex()).equal("0000FF00")
-  expect(AssColor.Colors.Red.toRgba().toHex()).equal("FF0000FF")
-  expect(AssColor.Colors.Red.toRgba().invert().toHex()).equal("00FFFFFF")
-  expect(
-    AssColor.fromRgba(AssColor.Colors.Red.toRgba().invert()).toHex(),
-  ).equal("FFFF0000")
-  expect(AssColor.Colors.Red.invert(true).toHex()).equal("FFFF00FF")
-  expect(AssColor.Colors.Red.invert(false).toHex()).equal("FFFF0000")
+test("COLORS", () => {
+  const c1 = new Rgb(COLORS.Red).toHex()
+  expect(c1).toEqual("FF0000")
 })
 
 test("set color test", () => {
   {
-    const r = Rgba.Colors.White
+    const r = new Rgba(0)
     r.red = 1
     r.green = 2
     r.blue = 3
@@ -56,11 +54,35 @@ test("set color test", () => {
   }
 
   {
-    const r = Bgra.Colors.White
+    const r = new Bgra(0)
     r.red = 1
     r.green = 2
     r.blue = 3
     r.alpha = 4
     expect(r.toHex()).toEqual("03020104")
   }
+})
+
+test("argb", () => {
+  const c1 = new Argb("#11223344", true)
+  expect(c1.alpha).toEqual(0xee)
+  expect(c1.red).toEqual(0x22)
+  expect(c1.green).toEqual(0x33)
+  expect(c1.blue).toEqual(0x44)
+
+  expect(c1.toHex()).toEqual("11223344")
+  const c2 = c1.toRgba()
+  expect(c2.toHex()).toEqual("223344EE")
+  const c3 = c1.toBgra()
+  expect(c3.toHex()).toEqual("443322EE")
+  const c4 = new Argb("#FFFF0000", true).toBgra().toHex("#")
+  expect(c4).toEqual("#0000FF00")
+})
+
+test("Bgr", () => {
+  const c1 = new Bgr(0)
+  c1.blue = 1
+  c1.green = 2
+  c1.red = 3
+  expect(c1.toHex()).toEqual("1020300")
 })

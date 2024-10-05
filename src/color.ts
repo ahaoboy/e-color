@@ -1,6 +1,4 @@
 import {
-  Color,
-  createColors,
   get01,
   get23,
   get45,
@@ -9,257 +7,406 @@ import {
   set23,
   set45,
   set67,
-} from "./common"
-import { COLORS, ColorName } from "./const"
+  parseHex,
+} from "./share"
 
-export class Rgba extends Color {
-  byteCount = 8
-
-  toRgba(): Rgba {
-    return new Rgba(this.color)
-  }
-  fromRgba(rgba: Rgba): Rgba {
-    return new Rgba(rgba.color)
-  }
-  static Colors = createColors(Rgba.fromName)
-
-  static fromName(name: ColorName) {
-    return new Rgba(COLORS[name] * (1 << 8) + 255)
-  }
-
-  get red() {
-    return get01(this.color)
-  }
-  get green() {
-    return get23(this.color)
-  }
-  get blue() {
-    return get45(this.color)
-  }
-  get alpha() {
-    return get67(this.color)
-  }
-
-  set red(n: number) {
-    this.color = set01(this.color, n)
-  }
-  set green(n: number) {
-    this.color = set23(this.color, n)
-  }
-  set blue(n: number) {
-    this.color = set45(this.color, n)
-  }
-  set alpha(n: number) {
-    this.color = set67(this.color, n)
-  }
-
-  setRed(n: number) {
-    this.red = n
-    return this
-  }
-  setGreen(n: number) {
-    this.green = n
-    return this
-  }
-  setBlue(n: number) {
-    this.blue = n
-    return this
-  }
-  setAlpha(n: number) {
-    this.alpha = n
-    return this
-  }
-  invert(alpha = false) {
-    const c = alpha ? ~this.color : (~this.color & 0xffffff00) | this.alpha
-    return new Rgba(c)
-  }
-  toRgb() {
-    return Rgb.fromRgba(this)
-  }
-  toBgr() {
-    return Bgr.fromRgba(this)
-  }
-  toBgra() {
-    return Bgra.fromRgba(this)
-  }
+declare class Color {
+  color: number
+  byteCount: number
+  get blue(): number
+  get green(): number
+  get red(): number
+  set blue(n: number)
+  set green(n: number)
+  set red(n: number)
+  constructor(color: string | number)
+  toRgb(): Rgb
+  toBgr(): Bgr
+  toRgba(alpha?: number, invertAlpha?: boolean): Rgba
+  toBgra(alpha?: number, invertAlpha?: boolean): Bgra
+  toArgb(alpha?: number, invertAlpha?: boolean): Argb
+  toAbgr(alpha?: number, invertAlpha?: boolean): Abgr
+  toHex(prefix?: string): string
+  invert(): Color
+}
+export declare class Rgb extends Color {
+  invert(): Rgb
+}
+export declare class Bgr extends Color {
+  invert(): Bgr
 }
 
-export class Rgb extends Color {
-  byteCount = 6
-
-  static Colors = createColors(Rgb.fromName)
-  get red() {
-    return get23(this.color)
-  }
-  get green() {
-    return get45(this.color)
-  }
-  get blue() {
-    return get67(this.color)
-  }
-
-  set red(n: number) {
-    this.color = set23(this.color, n)
-  }
-  set green(n: number) {
-    this.color = set45(this.color, n)
-  }
-  set blue(n: number) {
-    this.color = set67(this.color, n)
-  }
-
-  setRed(n: number) {
-    this.red = n
-    return this
-  }
-  setGreen(n: number) {
-    this.green = n
-    return this
-  }
-  setBlue(n: number) {
-    this.blue = n
-    return this
-  }
-
-  static fromRgba(rgba: Rgba): Rgb {
-    const c = rgba.color >>> 8
-    return new Rgb(c)
-  }
-
-  static fromName(name: ColorName): Rgb {
-    return new Rgb(COLORS[name])
-  }
-
-  toRgba() {
-    const c = (this.color << 8) | 0xff
-    return new Rgba(c)
-  }
-
-  invert() {
-    const c = ~this.color & 0x00ffffff
-    return new Rgb(c)
-  }
+declare class ColorAlpha extends Color {
+  invertAlpha: boolean
+  constructor(color: string | number, invertAlpha?: boolean)
+  get rawAlpha(): number
+  set rawAlpha(_: number)
+  get alpha(): number
+  set alpha(v: number)
+  toRgba(): Rgba
+  toBgra(): Bgra
+  toArgb(): Argb
+  toAbgr(): Abgr
 }
 
-export class Bgr extends Color {
-  byteCount = 6
-
-  get blue() {
-    return get23(this.color)
-  }
-  get green() {
-    return get45(this.color)
-  }
-  get red() {
-    return get67(this.color)
-  }
-
-  set blue(n: number) {
-    this.color = set23(this.color, n)
-  }
-  set green(n: number) {
-    this.color = set45(this.color, n)
-  }
-  set red(n: number) {
-    this.color = set67(this.color, n)
-  }
-  setRed(n: number) {
-    this.red = n
-    return this
-  }
-  setGreen(n: number) {
-    this.green = n
-    return this
-  }
-  setBlue(n: number) {
-    this.blue = n
-    return this
-  }
-  static Colors = createColors(Bgr.fromName)
-
-  static fromRgba(rgba: Rgba): Bgr {
-    const c = (rgba.blue << 16) | (rgba.green << 8) | rgba.red
-    return new Bgr(c)
-  }
-  static fromName(name: ColorName): Bgr {
-    return Bgr.fromRgba(Rgba.fromName(name))
-  }
-  toRgba() {
-    const c = (this.blue << 24) | (this.green << 16) | (this.red << 8) | 0xff
-    return new Rgba(c)
-  }
-
-  invert() {
-    const c = ~this.color & 0x00ffffff
-    return new Bgr(c)
-  }
+export declare class Rgba extends ColorAlpha {
+  invert(alpha?: boolean): Rgba
 }
-export class Bgra extends Color {
-  byteCount = 8
+export declare class Bgra extends ColorAlpha {
+  invert(alpha?: boolean): Bgra
+}
+export declare class Argb extends ColorAlpha {
+  invert(alpha?: boolean): Argb
+}
 
-  static Colors = createColors(Bgra.fromName)
-  get blue() {
-    return get01(this.color)
-  }
-  get green() {
-    return get23(this.color)
-  }
-  get red() {
-    return get45(this.color)
-  }
+export declare class Abgr extends ColorAlpha {
+  invert(alpha?: boolean): Abgr
+}
 
-  get alpha() {
-    return get67(this.color)
-  }
-  set blue(n: number) {
-    this.color = set01(this.color, n)
-  }
-  set green(n: number) {
-    this.color = set23(this.color, n)
-  }
-  set red(n: number) {
-    this.color = set45(this.color, n)
-  }
-  set alpha(n: number) {
-    this.color = set67(this.color, n)
-  }
+function Color(this: Color, color: number | string) {
+  this.color = typeof color === "number" ? color : parseHex(color)
+}
 
-  setRed(n: number) {
-    this.red = n
-    return this
-  }
-  setGreen(n: number) {
-    this.green = n
-    return this
-  }
-  setBlue(n: number) {
-    this.blue = n
-    return this
-  }
-  setAlpha(n: number) {
-    this.alpha = n
-    return this
-  }
+Color.prototype = new Color(0) as Color
+// Color.prototype = Object.create(Color.prototype);
+// Color.prototype.constructor = Color;
 
-  static fromRgba(rgba: Rgba): Bgra {
-    const c =
-      ((rgba.blue << 24) + (rgba.green << 16) + (rgba.red << 8)) | rgba.alpha
-    return new Bgra(c)
-  }
-  static fromName(name: ColorName): Bgra {
-    return Bgra.fromRgba(Rgba.fromName(name))
-  }
-  toRgba() {
-    const c =
-      ((this.red << 24) |
-        (this.green << 16) |
-        (this.blue << 8) |
-        this.alpha) >>>
-      0
-    return new Rgba(c)
-  }
-  invert(alpha = false) {
-    const c = alpha ? ~this.color : (~this.color & 0xffffff00) | this.alpha
-    return new Bgra(c)
-  }
+Color.prototype.byteCount = 6
+Color.prototype.toRgba = function (alpha = 0, invertAlpha?: boolean) {
+  const c =
+    (this.red << 24) |
+    (this.green << 16) |
+    (this.blue << 8) |
+    (invertAlpha ? 255 - alpha : alpha)
+  return new Rgba(c, invertAlpha)
+}
+Color.prototype.toRgb = function () {
+  const c = (this.red << 16) | (this.green << 8) | this.blue
+  return new Rgb(c)
+}
+Color.prototype.toBgr = function () {
+  return this.toRgb().toBgr()
+}
+Color.prototype.toBgra = function (alpha = 0, invertAlpha?: boolean) {
+  return this.toRgba(alpha, invertAlpha).toBgra()
+}
+Color.prototype.toArgb = function (alpha = 0, invertAlpha?: boolean) {
+  return this.toRgba(alpha, invertAlpha).toArgb()
+}
+Color.prototype.toAbgr = function (alpha = 0, invertAlpha?: boolean) {
+  return this.toRgba(alpha, invertAlpha).toAbgr()
+}
+Color.prototype.invert = function () {
+  const c = ~this.color & 0x00ffffff
+  return new Rgb(c)
+}
+
+Color.prototype.toHex = function (prefix = "") {
+  const hex = (this.color >>> 0).toString(16).padStart(this.byteCount, "0")
+  return (prefix + hex).toUpperCase()
+}
+
+function ColorAlpha(
+  this: ColorAlpha,
+  color: string | number,
+  invertAlpha = false,
+) {
+  Color.call(this, color)
+  this.invertAlpha = invertAlpha
+  this.byteCount = 8
+  Object.defineProperty(this, "alpha", {
+    get: function (this: ColorAlpha) {
+      return this.invertAlpha ? 255 - this.rawAlpha : this.rawAlpha
+    },
+    set: function (this: ColorAlpha, v: number) {
+      this.rawAlpha = this.invertAlpha ? 255 - v : v
+    },
+  })
+}
+
+ColorAlpha.prototype = new Color(0) as ColorAlpha
+// ColorAlpha.prototype = Object.create(Color.prototype);
+// ColorAlpha.prototype.constructor = Color;
+ColorAlpha.prototype.byteCount = 8
+
+ColorAlpha.prototype.toRgba = function () {
+  const c =
+    (this.red << 24) | (this.green << 16) | (this.blue << 8) | this.alpha
+  return new Rgba(c, this.invertAlpha)
+}
+ColorAlpha.prototype.toBgra = function () {
+  const c =
+    (this.blue << 24) | (this.green << 16) | (this.red << 8) | this.alpha
+  return new Bgra(c, this.invertAlpha)
+}
+ColorAlpha.prototype.toAbgr = function () {
+  const c =
+    (this.alpha << 24) | (this.blue << 16) | (this.green << 8) | this.red
+  return new Abgr(c, this.invertAlpha)
+}
+ColorAlpha.prototype.toArgb = function () {
+  const c =
+    (this.alpha << 24) | (this.red << 16) | (this.green << 8) | this.blue
+  return new Argb(c, this.invertAlpha)
+}
+ColorAlpha.prototype.toRgb = function () {
+  const c = (this.red << 16) | (this.green << 8) | this.blue
+  return new Rgb(c)
+}
+
+ColorAlpha.prototype.toBgr = function () {
+  const c = (this.blue << 16) | (this.green << 8) | this.red
+  return new Rgb(c)
+}
+
+export function Rgba(this: Rgba, color: string | number, invertAlpha = false) {
+  ColorAlpha.call(this, color, invertAlpha)
+  Object.defineProperty(this, "red", {
+    get: function () {
+      return get01(this.color)
+    },
+    set: function (v: number) {
+      this.color = set01(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "green", {
+    get: function () {
+      return get23(this.color)
+    },
+    set: function (v: number) {
+      this.color = set23(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "blue", {
+    get: function () {
+      return get45(this.color)
+    },
+    set: function (v: number) {
+      this.color = set45(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "rawAlpha", {
+    get: function () {
+      return get67(this.color)
+    },
+    set: function (v: number) {
+      this.color = set67(this.color, v)
+    },
+  })
+}
+Rgba.prototype = Object.create(ColorAlpha.prototype)
+Rgba.prototype.constructor = ColorAlpha
+
+// Rgba.prototype.toRgba = function () {
+//   return new Rgba(this.color, this.invertAlpha);
+// };
+
+Rgba.prototype.invert = function (alpha = false) {
+  const c = alpha ? ~this.color : (~this.color & 0xffffff00) | this.alpha
+  return new Rgba(c, this.invertAlpha)
+}
+
+export function Rgb(this: Rgb, color: string | number) {
+  Color.call(this, color)
+
+  Object.defineProperty(this, "red", {
+    get: function () {
+      return get23(this.color)
+    },
+    set: function (v: number) {
+      this.color = set23(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "green", {
+    get: function () {
+      return get45(this.color)
+    },
+    set: function (v: number) {
+      this.color = set45(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "blue", {
+    get: function () {
+      return get67(this.color)
+    },
+    set: function (v: number) {
+      this.color = set67(this.color, v)
+    },
+  })
+}
+
+Rgb.prototype = new Color(0) as Rgb
+// Rgb.prototype = Object.create(Color.prototype);
+// Rgb.prototype.constructor = Color;
+
+Rgb.prototype.toRgba = function (alpha = 0, invertAlpha?: boolean) {
+  const c = (this.color << 8) | (invertAlpha ? 255 - alpha : alpha)
+  return new Rgba(c, invertAlpha)
+}
+Rgb.prototype.toBgr = function () {
+  const c = (this.blue << 16) | (this.green << 8) | this.red
+  return new Bgr(c)
+}
+
+export function Bgra(this: Bgra, color: string | number, invertAlpha = false) {
+  ColorAlpha.call(this, color, invertAlpha)
+
+  Object.defineProperty(this, "blue", {
+    get: function () {
+      return get01(this.color)
+    },
+    set: function (v: number) {
+      this.color = set01(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "green", {
+    get: function () {
+      return get23(this.color)
+    },
+    set: function (v: number) {
+      this.color = set23(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "red", {
+    get: function () {
+      return get45(this.color)
+    },
+    set: function (v: number) {
+      this.color = set45(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "rawAlpha", {
+    get: function () {
+      return get67(this.color)
+    },
+    set: function (v: number) {
+      this.color = set67(this.color, v)
+    },
+  })
+}
+Bgra.prototype = new ColorAlpha(0) as Bgra
+
+Bgra.prototype.invert = function (alpha = false) {
+  const c = alpha ? ~this.color : (~this.color & 0xffffff00) | this.alpha
+  return new Bgra(c)
+}
+
+export function Bgr(this: Bgr, color: string | number) {
+  Color.call(this, color)
+
+  Object.defineProperty(this, "blue", {
+    get: function () {
+      return get01(this.color)
+    },
+    set: function (v: number) {
+      this.color = set01(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "green", {
+    get: function () {
+      return get23(this.color)
+    },
+    set: function (v: number) {
+      this.color = set23(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "red", {
+    get: function () {
+      return get45(this.color)
+    },
+    set: function (v: number) {
+      this.color = set45(this.color, v)
+    },
+  })
+}
+
+Bgr.prototype = new Color(0) as Bgr
+
+export function Argb(this: Argb, color: string | number, invertAlpha = false) {
+  ColorAlpha.call(this, color, invertAlpha)
+
+  Object.defineProperty(this, "rawAlpha", {
+    get: function () {
+      return get01(this.color)
+    },
+    set: function (v: number) {
+      this.color = set01(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "red", {
+    get: function () {
+      return get23(this.color)
+    },
+    set: function (v: number) {
+      this.color = set23(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "green", {
+    get: function () {
+      return get45(this.color)
+    },
+    set: function (v: number) {
+      this.color = set45(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "blue", {
+    get: function () {
+      return get67(this.color)
+    },
+    set: function (v: number) {
+      this.color = set67(this.color, v)
+    },
+  })
+}
+Argb.prototype = new ColorAlpha(0) as Argb
+
+Argb.prototype.invert = function (alpha = false) {
+  const c = alpha
+    ? ~this.color
+    : (~this.color & 0x00ffffff) | (this.alpha << 24)
+  return new Bgra(c, this.invertAlpha)
+}
+export function Abgr(this: Argb, color: string | number, invertAlpha = false) {
+  ColorAlpha.call(this, color, invertAlpha)
+
+  Object.defineProperty(this, "rawAlpha", {
+    get: function () {
+      return get01(this.color)
+    },
+    set: function (v: number) {
+      this.color = set01(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "blue", {
+    get: function () {
+      return get23(this.color)
+    },
+    set: function (v: number) {
+      this.color = set23(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "green", {
+    get: function () {
+      return get45(this.color)
+    },
+    set: function (v: number) {
+      this.color = set45(this.color, v)
+    },
+  })
+  Object.defineProperty(this, "red", {
+    get: function () {
+      return get67(this.color)
+    },
+    set: function (v: number) {
+      this.color = set67(this.color, v)
+    },
+  })
+}
+Abgr.prototype = new ColorAlpha(0) as Abgr
+
+Abgr.prototype.invert = function (alpha = false) {
+  const c = alpha
+    ? ~this.color
+    : (~this.color & 0x00ffffff) | (this.alpha << 24)
+  return new Bgra(c, this.invertAlpha)
 }
