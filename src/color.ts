@@ -296,7 +296,7 @@ export function Bgr(this: Bgr, color: string | number) {
 
   Object.defineProperty(this, "blue", {
     get: function () {
-      return get01(this.color)
+      return get23(this.color)
     },
     set: function (v: number) {
       this.color = set01(this.color, v)
@@ -304,7 +304,7 @@ export function Bgr(this: Bgr, color: string | number) {
   })
   Object.defineProperty(this, "green", {
     get: function () {
-      return get23(this.color)
+      return get45(this.color)
     },
     set: function (v: number) {
       this.color = set23(this.color, v)
@@ -312,7 +312,7 @@ export function Bgr(this: Bgr, color: string | number) {
   })
   Object.defineProperty(this, "red", {
     get: function () {
-      return get45(this.color)
+      return get67(this.color)
     },
     set: function (v: number) {
       this.color = set45(this.color, v)
