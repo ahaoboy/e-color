@@ -1,9 +1,10 @@
 {
   "name": "e-color",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "e-color, css color",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
+  "sideEffects": false,
   "scripts": {
     "lint:fix": "biome lint ./ --write --unsafe",
     "format": "biome format --write  ./",
@@ -12,7 +13,10 @@
     "test": "vitest",
     "bench": "vitest bench"
   },
-  "keywords": ["css", "color"],
+  "keywords": [
+    "css",
+    "color"
+  ],
   "author": "ahaoboy",
   "license": "ISC",
   "devDependencies": {
